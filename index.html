@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto KYC Verification Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+min-height: 100vh;
+padding: 20px;
+position: relative;
+overflow-x: hidden;
+}
+
+body::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)" /></svg>');
+animation: float 20s linear infinite;
+pointer-events: none;
+}
+
+@keyframes float {
+from { background-position: 0 0; }
+to { background-position: 100px 100px; }
+}
+
+.container {
+max-width: 900px;
+margin: 40px auto;
+background: rgba(255, 255, 255, 0.98);
+padding: 50px;
+border-radius: 24px;
+box-shadow: 0 30px 90px rgba(0, 0, 0, 0.3), 
+                0 10px 30px rgba(0, 0, 0, 0.15);
+backdrop-filter: blur(10px);
+position: relative;
+animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+from {
+    opacity: 0;
+    transform: translateY(30px);
+}
+to {
+    opacity: 1;
+    transform: translateY(0);
+}
+}
+
+.header {
+text-align: center;
+margin-bottom: 40px;
+}
+
+.logo {
+width: 80px;
+height: 80px;
+margin: 0 auto 20px;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+border-radius: 20px;
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.05); }
+}
+
+.logo i {
+font-size: 40px;
+color: #fff;
+}
+
+h1 {
+font-size: 36px;
+font-weight: 900;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 10px;
+letter-spacing: -1px;
+}
+
+.subtitle {
+color: #6b7280;
+font-size: 16px;
+font-weight: 400;
+}
+
+.step {
+margin-bottom: 40px;
+padding: 30px;
+background: linear-gradient(135deg, #f8f9ff 0%, #fef4ff 100%);
+border-radius: 16px;
+border: 2px solid #e5e7eb;
+transition: all 0.3s ease;
+position: relative;
+overflow: hidden;
+}
+
+.step::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+width: 5px;
+height: 100%;
+background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+.step:hover {
+transform: translateY(-5px);
+box-shadow: 0 20px 40px rgba(102, 126, 234, 0.15);
+border-color: #667eea;
+}
+
+.step-header {
+display: flex;
+align-items: center;
+margin-bottom: 25px;
+gap: 15px;
+}
+
+.step-icon {
+width: 50px;
+height: 50px;
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+border-radius: 12px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: white;
+font-size: 24px;
+flex-shrink: 0;
+box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.step h2 {
+color: #1f2937;
+font-size: 24px;
+font-weight: 700;
+flex: 1;
+}
+
+.step-badge {
+background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+color: white;
+padding: 6px 14px;
+border-radius: 20px;
+font-size: 12px;
+font-weight: 600;
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.form-group {
+margin: 20px 0;
+}
+
+label {
+display: block;
+margin-bottom: 10px;
+font-weight: 600;
+color: #374151;
+font-size: 14px;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+label i {
+color: #667eea;
+font-size: 16px;
+}
+
+input, select, textarea {
+width: 100%;
+padding: 14px 16px;
+border: 2px solid #e5e7eb;
+border-radius: 12px;
+font-family: 'Inter', sans-serif;
+font-size: 15px;
+transition: all 0.3s ease;
+background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+outline: none;
+border-color: #667eea;
+box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+input[type="file"] {
+padding: 12px;
+cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+border: none;
+padding: 10px 20px;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+margin-right: 12px;
+transition: all 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.wallet-box {
+background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+padding: 25px;
+border-radius: 16px;
+margin-top: 15px;
+font-family: 'Courier New', monospace;
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 15px;
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+border: 2px solid #334155;
+position: relative;
+overflow: hidden;
+}
+
+.wallet-box::before {
+content: '';
+position: absolute;
+top: -50%;
+left: -50%;
+width: 200%;
+height: 200%;
+background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+animation: shine 3s infinite;
+}
+
+@keyframes shine {
+0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+#wallet {
+color: #fbbf24;
+font-size: 15px;
+font-weight: 600;
+word-break: break-all;
+flex: 1;
+position: relative;
+z-index: 1;
+text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+}
+
+.copy-btn {
+background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+color: #1e293b;
+border: none;
+padding: 12px 24px;
+border-radius: 10px;
+cursor: pointer;
+font-weight: 700;
+font-size: 14px;
+display: flex;
+align-items: center;
+gap: 8px;
+transition: all 0.3s ease;
+box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3);
+position: relative;
+z-index: 1;
+}
+
+.copy-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 12px 30px rgba(251, 191, 36, 0.5);
+}
+
+.copy-btn:active {
+transform: translateY(0);
+}
+
+.fee-highlight {
+background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+padding: 20px;
+border-radius: 12px;
+border: 2px solid #fbbf24;
+margin: 15px 0;
+display: flex;
+align-items: center;
+gap: 15px;
+box-shadow: 0 8px 20px rgba(251, 191, 36, 0.2);
+}
+
+.fee-highlight i {
+font-size: 32px;
+color: #f59e0b;
+}
+
+.fee-text {
+flex: 1;
+}
+
+.fee-text p {
+color: #78350f;
+font-weight: 600;
+margin-bottom: 5px;
+}
+
+.fee-amount {
+font-size: 32px;
+font-weight: 900;
+color: #92400e;
+}
+
+.progress {
+margin: 30px 0;
+background: #e5e7eb;
+border-radius: 50px;
+overflow: hidden;
+height: 12px;
+box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar {
+height: 100%;
+background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+background-size: 200% 100%;
+width: 0%;
+transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+animation: gradient 2s linear infinite;
+border-radius: 50px;
+box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+@keyframes gradient {
+0% { background-position: 0% 50%; }
+100% { background-position: 200% 50%; }
+}
+
+.progress-label {
+text-align: center;
+margin-top: 10px;
+color: #6b7280;
+font-weight: 600;
+font-size: 14px;
+}
+
+button.submit-btn {
+width: 100%;
+background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+color: #fff;
+border: none;
+padding: 18px 32px;
+border-radius: 14px;
+cursor: pointer;
+font-size: 18px;
+font-weight: 700;
+margin-top: 30px;
+transition: all 0.3s ease;
+box-shadow: 0 12px 30px rgba(16, 185, 129, 0.4);
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 12px;
+text-transform: uppercase;
+letter-spacing: 1px;
+}
+
+button.submit-btn:hover {
+transform: translateY(-3px);
+box-shadow: 0 20px 40px rgba(16, 185, 129, 0.5);
+}
+
+button.submit-btn:active {
+transform: translateY(-1px);
+}
+
+button.submit-btn i {
+font-size: 20px;
+}
+
+.step-hidden {
+display: none;
+}
+
+.step-visible {
+display: block;
+animation: fadeInSlide 0.5s ease-out;
+}
+
+@keyframes fadeInSlide {
+from {
+    opacity: 0;
+    transform: translateX(30px);
+}
+to {
+    opacity: 1;
+    transform: translateX(0);
+}
+}
+
+.navigation-buttons {
+display: flex;
+gap: 15px;
+margin-top: 30px;
+justify-content: space-between;
+}
+
+.nav-btn {
+flex: 1;
+padding: 16px 28px;
+border: none;
+border-radius: 12px;
+font-size: 16px;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.3s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 10px;
+}
+
+.btn-prev {
+background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+color: #374151;
+}
+
+.btn-prev:hover {
+background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+transform: translateY(-2px);
+box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-next {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-next:hover {
+transform: translateY(-2px);
+box-shadow: 0 12px 30px rgba(102, 126, 234, 0.5);
+}
+
+.btn-disabled {
+opacity: 0.5;
+cursor: not-allowed;
+pointer-events: none;
+}
+
+.step-indicator {
+display: flex;
+justify-content: center;
+gap: 10px;
+margin: 30px 0;
+}
+
+.step-dot {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+background: #e5e7eb;
+transition: all 0.3s ease;
+cursor: pointer;
+}
+
+.step-dot.active {
+width: 40px;
+border-radius: 6px;
+background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.step-dot.completed {
+background: #10b981;
+}
+
+.completion-message {
+text-align: center;
+padding: 60px 30px;
+}
+
+.completion-message i {
+font-size: 80px;
+color: #10b981;
+margin-bottom: 30px;
+animation: scaleIn 0.6s ease-out;
+}
+
+@keyframes scaleIn {
+from {
+    transform: scale(0);
+    opacity: 0;
+}
+to {
+    transform: scale(1);
+    opacity: 1;
+}
+}
+
+.completion-message h2 {
+font-size: 32px;
+color: #1f2937;
+margin-bottom: 15px;
+font-weight: 900;
+}
+
+.completion-message p {
+font-size: 18px;
+color: #6b7280;
+margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+.container {
+    padding: 30px 20px;
+}
+
+h1 {
+    font-size: 28px;
+}
+
+.step {
+    padding: 20px;
+}
+
+.wallet-box {
+    flex-direction: column;
+    text-align: center;
+}
+
+.navigation-buttons {
+    flex-direction: column;
+}
+
+.nav-btn {
+    width: 100%;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<div class="logo">
+<i class="fas fa-shield-alt"></i>
+</div>
+<h1>Withdrawal KYC Verification</h1>
+<p class="subtitle">Secure Identity Verification Portal</p>
+</div>
+
+<div class="step-indicator">
+<div class="step-dot active" data-step="1"></div>
+<div class="step-dot" data-step="2"></div>
+<div class="step-dot" data-step="3"></div>
+<div class="step-dot" data-step="4"></div>
+</div>
+
+<div class="progress">
+<div class="progress-bar" id="progressBar"></div>
+</div>
+<div class="progress-label" id="progressLabel">Step 1 of 4 - Getting Started</div>
+
+<!-- Step 1 -->
+<div class="step step-visible" id="step1">
+<div class="step-header">
+<div class="step-icon">
+<i class="fas fa-id-card"></i>
+</div>
+<h2>Identity Verification</h2>
+<span class="step-badge">25%</span>
+</div>
+<div class="form-group">
+<label><i class="fas fa-passport"></i> Government-Issued ID</label>
+<input type="file" accept="image/*,application/pdf" id="govId">
+</div>
+<div class="form-group">
+<label><i class="fas fa-camera"></i> Selfie Photo</label>
+<input type="file" accept="image/*" id="selfie">
+</div>
+<div class="form-group">
+<label><i class="fas fa-user"></i> Full Legal Name</label>
+<input type="text" placeholder="Enter your full name" id="fullName">
+</div>
+<div class="form-group">
+<label><i class="fas fa-calendar"></i> Date of Birth</label>
+<input type="date" id="dob">
+</div>
+<div class="form-group">
+<label><i class="fas fa-flag"></i> Nationality</label>
+<input type="text" placeholder="Enter your nationality" id="nationality">
+</div>
+
+<div class="navigation-buttons">
+<button class="nav-btn btn-prev btn-disabled" onclick="previousStep()">
+<i class="fas fa-arrow-left"></i> Previous
+</button>
+<button class="nav-btn btn-next" onclick="nextStep()">
+Next <i class="fas fa-arrow-right"></i>
+</button>
+</div>
+</div>
+
+<!-- Step 2 -->
+<div class="step step-hidden" id="step2">
+<div class="step-header">
+<div class="step-icon">
+<i class="fas fa-home"></i>
+</div>
+<h2>Address Confirmation</h2>
+<span class="step-badge">50%</span>
+</div>
+<div class="form-group">
+<label><i class="fas fa-file-invoice"></i> Proof of Address (Utility Bill, Bank Statement)</label>
+<input type="file" accept="image/*,application/pdf" id="addressProof">
+</div>
+<div class="form-group">
+<label><i class="fas fa-map-marker-alt"></i> Street Address</label>
+<input type="text" placeholder="Enter your street address" id="streetAddress">
+</div>
+<div class="form-group">
+<label><i class="fas fa-city"></i> City</label>
+<input type="text" placeholder="Enter your city" id="city">
+</div>
+<div class="form-group">
+<label><i class="fas fa-mail-bulk"></i> Postal Code</label>
+<input type="text" placeholder="Enter your postal code" id="postalCode">
+</div>
+
+<div class="navigation-buttons">
+<button class="nav-btn btn-prev" onclick="previousStep()">
+<i class="fas fa-arrow-left"></i> Previous
+</button>
+<button class="nav-btn btn-next" onclick="nextStep()">
+Next <i class="fas fa-arrow-right"></i>
+</button>
+</div>
+</div>
+
+<!-- Step 3 -->
+<div class="step step-hidden" id="step3">
+<div class="step-header">
+<div class="step-icon">
+<i class="fas fa-wallet"></i>
+</div>
+<h2>Withdrawal Options</h2>
+<span class="step-badge">75%</span>
+</div>
+<div class="form-group">
+<label><i class="fas fa-exchange-alt"></i> Withdrawal Method</label>
+<select id="withdrawalMethod">
+<option value="">Select a method</option>
+<option>Bank Transfer</option>
+<option>Crypto Wallet</option>
+</select>
+</div>
+<div class="form-group">
+<label><i class="fas fa-university"></i> Bank Name / Wallet Type</label>
+<input type="text" placeholder="Enter bank name or wallet type" id="bankName">
+</div>
+<div class="form-group">
+<label><i class="fas fa-hashtag"></i> Account Number / Wallet Address</label>
+<input type="text" placeholder="Enter account number or wallet address" id="accountNumber">
+</div>
+<div class="form-group">
+<label><i class="fas fa-info-circle"></i> Crypto Usage & Intent</label>
+<textarea rows="4" placeholder="Please describe your intended use of cryptocurrency..." id="cryptoIntent"></textarea>
+</div>
+
+<div class="navigation-buttons">
+<button class="nav-btn btn-prev" onclick="previousStep()">
+<i class="fas fa-arrow-left"></i> Previous
+</button>
+<button class="nav-btn btn-next" onclick="nextStep()">
+Next <i class="fas fa-arrow-right"></i>
+</button>
+</div>
+</div>
+
+<!-- Step 4 -->
+<div class="step step-hidden" id="step4">
+<div class="step-header">
+<div class="step-icon">
+<i class="fas fa-check-circle"></i>
+</div>
+<h2>Final Review & Payment</h2>
+<span class="step-badge">100%</span>
+</div>
+<div class="fee-highlight">
+<i class="fas fa-coins"></i>
+<div class="fee-text">
+<p>KYC Verification Fee</p>
+<div class="fee-amount">$254.23</div>
+</div>
+</div>
+<p style="margin: 20px 0; color: #6b7280; font-weight: 500;">
+<i class="fas fa-arrow-down" style="color: #667eea; margin-right: 8px;"></i>
+Deposit BTC to the address below:
+</p>
+<div class="wallet-box">
+<span id="wallet">bc1q68k7akfaxt5ynfh7tjyrle5sx7ka6v89pnrpn2</span>
+<button class="copy-btn" onclick="copyWallet()">
+<i class="fas fa-copy"></i> Copy
+</button>
+</div>
+<div class="form-group" style="margin-top: 25px;">
+<label><i class="fas fa-receipt"></i> Upload Payment Proof</label>
+<input type="file" accept="image/*" id="paymentProof">
+</div>
+
+<div class="navigation-buttons">
+<button class="nav-btn btn-prev" onclick="previousStep()">
+<i class="fas fa-arrow-left"></i> Previous
+</button>
+<button class="nav-btn btn-next" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="submitForm()">
+<i class="fas fa-paper-plane"></i> Submit Application
+</button>
+</div>
+</div>
+
+<!-- Completion Step -->
+<div class="step step-hidden" id="stepComplete">
+<div class="completion-message">
+<i class="fas fa-check-circle"></i>
+<h2>Application Submitted!</h2>
+<p>Your KYC verification has been successfully submitted for review.</p>
+<p style="font-size: 16px; color: #9ca3af;">You will receive a confirmation email shortly.</p>
+<button class="nav-btn btn-next" style="max-width: 300px; margin: 20px auto;" onclick="location.reload()">
+<i class="fas fa-redo"></i> Start New Application
+</button>
+</div>
+</div>
+</div>
+
+<script>
+// Current step tracking
+let currentStep = 1;
+const totalSteps = 4;
+
+// Progress bar and label elements
+const progressBar = document.getElementById("progressBar");
+const progressLabel = document.getElementById("progressLabel");
+
+const stepLabels = [
+    "Step 1 of 4 - Identity Verification",
+    "Step 2 of 4 - Address Confirmation",
+    "Step 3 of 4 - Withdrawal Options",
+    "Step 4 of 4 - Final Review & Payment"
+];
+
+// Initialize
+updateProgress(1);
+
+// Update progress bar and label
+function updateProgress(step) {
+    const progress = (step / totalSteps) * 100;
+    progressBar.style.width = progress + "%";
+    
+    if (step <= totalSteps) {
+        progressLabel.textContent = stepLabels[step - 1];
+    }
+    
+    // Update step dots
+    document.querySelectorAll('.step-dot').forEach((dot, index) => {
+        dot.classList.remove('active', 'completed');
+        if (index + 1 === step) {
+            dot.classList.add('active');
+        } else if (index + 1 < step) {
+            dot.classList.add('completed');
+        }
+    });
+}
+
+// Show specific step
+function showStep(stepNumber) {
+    // Hide all steps
+    for (let i = 1; i <= totalSteps; i++) {
+        const step = document.getElementById(`step${i}`);
+        if (step) {
+            step.classList.remove('step-visible');
+            step.classList.add('step-hidden');
+        }
+    }
+    
+    // Hide completion step
+    const completeStep = document.getElementById('stepComplete');
+    if (completeStep) {
+        completeStep.classList.remove('step-visible');
+        completeStep.classList.add('step-hidden');
+    }
+    
+    // Show current step
+    const currentStepEl = document.getElementById(`step${stepNumber}`);
+    if (currentStepEl) {
+        currentStepEl.classList.remove('step-hidden');
+        currentStepEl.classList.add('step-visible');
+    }
+    
+    // Update progress
+    updateProgress(stepNumber);
+    
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Next step function
+function nextStep() {
+    if (currentStep < totalSteps) {
+        currentStep++;
+        showStep(currentStep);
+    }
+}
+
+// Previous step function
+function previousStep() {
+    if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+    }
+}
+
+// Copy wallet address with enhanced feedback
+function copyWallet() {
+    const wallet = document.getElementById("wallet").textContent;
+    navigator.clipboard.writeText(wallet).then(() => {
+        const btn = event.target.closest('.copy-btn');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.style.background = 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)';
+        }, 2000);
+    });
+}
+
+// Submit form function
+function submitForm() {
+    const btn = event.target;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        // Hide all steps
+        for (let i = 1; i <= totalSteps; i++) {
+            const step = document.getElementById(`step${i}`);
+            if (step) {
+                step.classList.remove('step-visible');
+                step.classList.add('step-hidden');
+            }
+        }
+        
+        // Show completion
+        const completeStep = document.getElementById('stepComplete');
+        completeStep.classList.remove('step-hidden');
+        completeStep.classList.add('step-visible');
+        
+        // Update progress to 100%
+        progressBar.style.width = "100%";
+        progressLabel.textContent = "Application Complete!";
+        
+        // Update all dots to completed
+        document.querySelectorAll('.step-dot').forEach(dot => {
+            dot.classList.remove('active');
+            dot.classList.add('completed');
+        });
+        
+        btn.disabled = false;
+    }, 2000);
+}
+
+// Optional: Add click handlers to step dots for navigation
+document.querySelectorAll('.step-dot').forEach((dot, index) => {
+    dot.addEventListener('click', () => {
+        const targetStep = index + 1;
+        if (targetStep <= totalSteps) {
+            currentStep = targetStep;
+            showStep(currentStep);
+        }
+    });
+});
+
+// Optional: Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' && currentStep < totalSteps) {
+        nextStep();
+    } else if (e.key === 'ArrowLeft' && currentStep > 1) {
+        previousStep();
+    }
+});
+</script>
+</body>
+</html>
